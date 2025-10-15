@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     git \
     wget \
+    curl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,7 +22,12 @@ COPY . /app
 # Ensure assets directory exists (model will be downloaded there)
 RUN mkdir -p /app/assets
 
+# Copy and make entrypoint executable
+COPY bin/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 8000
 
 # Use a simple startup command for uvicorn
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["uvicorn", "sentiment_analyzer.api:app", "--host", "0.0.0.0", "--port", "8000"]
