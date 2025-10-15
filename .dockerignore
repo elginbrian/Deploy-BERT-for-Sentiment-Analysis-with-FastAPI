@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+.pytest_cache
+.venv
+venv/
+*.pkl
+*.pt
+*.log
+dist
+build
+.git
+.gitignore
+*.md
+Pipfile
+Pipfile.lock
