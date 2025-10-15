@@ -31,35 +31,42 @@ You can also [read the complete tutorial here](https://www.curiousily.com/posts/
 Clone this repo:
 
 ```sh
-git clone git@github.com:curiousily/Deploy-BERT-for-Sentiment-Analysis-with-FastAPI.git
-cd Deploy-BERT-for-Sentiment-Analysis-with-FastAPI
+git clone https://github.com/Raion-App-Programmer/Deploy-BERT-Sentiment-Analysis-Docker.git
+cd Deploy-BERT-Sentiment-Analysis-Docker
 ```
 
-Install the dependencies:
+## Running it via Docker Compose
 
-```sh
-pipenv install --dev
+Build and run with docker-compose (this will also download the model into `./assets` if missing):
+
+```bash
+docker compose up --build
 ```
 
-Download the pre-trained model:
+After the container is ready, the API docs will be available at:
 
-```sh
-bin/download_model
+- http://localhost:8000/docs
+
+Test with curl (Linux):
+
+```bash
+curl -sS -X POST "http://localhost:8000/predict" \
+    -H "Content-Type: application/json" \
+    -d '{"text":"This app is a total waste of time!"}' | jq
 ```
 
-## Test the setup
+Test with PowerShell (Windows):
 
-Start the HTTP server:
-
-```sh
-bin/start_server
+```powershell
+curl.exe -sS -X POST "http://localhost:8000/predict" `
+    -H "Content-Type: application/json" `
+    -d '{ "text": "This app is a total waste of time!" }' | ConvertFrom-Json
 ```
 
-Send a test request:
+## Notes
 
-```sh
-bin/test_request
-```
+- The Docker image installs CPU PyTorch by default. If you need GPU support, update the Dockerfile and install a CUDA-enabled PyTorch wheel (and use the NVIDIA container runtime).
+- I updated the code to be compatible with newer `transformers` outputs (pooled output extraction). If you maintain a specific `transformers` version, pin it in `requirements.txt`.
 
 ## License
 
