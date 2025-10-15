@@ -15,6 +15,18 @@ class SentimentClassifier(nn.Module):
         self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
 
     def forward(self, input_ids, attention_mask):
-        _, pooled_output = self.bert(input_ids=input_ids, attention_mask=attention_mask)
+        bert_outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
+
+        pooled_output = None
+        if isinstance(bert_outputs, tuple):
+            if len(bert_outputs) > 1:
+                pooled_output = bert_outputs[1]
+        else:
+            pooled_output = getattr(bert_outputs, "pooler_output", None)
+
+        if pooled_output is None:
+            last_hidden = bert_outputs[0] if isinstance(bert_outputs, tuple) else bert_outputs.last_hidden_state
+            pooled_output = last_hidden[:, 0]
+
         output = self.drop(pooled_output)
         return self.out(output)
